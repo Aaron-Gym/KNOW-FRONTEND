@@ -1,0 +1,48 @@
+1 什么是MVVM
+    Model–View–ViewModel(MVVM) 是一个软件架构设计模式，由微软 WPF 和 Silverlight 的架构师 Ken Cooper 和 Ted Peters 开发，
+    是一种简化用户界面的事件驱动编程方式。由 John Gossman（同样也是 WPF 和 Silverlight 的架构师）于2005年在他的博客上发表.
+    KnockoutJS 是最早实现 MVVM 模式的前端框架之一，当下流行的 MVVM 框架有 Vue，Angular等。
+    
+    Note: MVVM框架自动去更新DOM的状态，开发者只需要去关注model的变化（数据层的变化），从DOM的反锁步骤中解放出来。
+
+2 用JavaScript在浏览器中操作HTML，经历了若干发展阶段
+    第一阶段，直接用JavaScript操作DOM节点，使用浏览器提供的原生API：
+        var dom = document.getElementById('name');
+        dom.innerHTML = 'Homer';
+        dom.style.color = 'red';
+    
+    第二阶段，由于原生API不好用，还要考虑浏览器兼容性，jQuery横空出世，以简洁的API迅速俘获了前端开发者的芳心：
+        $('#name').text('Homer').css('color', 'red');
+    
+    第三阶段，MVC模式，需要服务器端配合，JavaScript可以在前端修改服务器渲染后的数据
+    
+    第四阶段，随着前端页面越来越复杂，用户对于交互性要求也越来越高，想要写出Gmail这样的页面，仅仅用jQuery是远远不够的。MVVM模型应运而生。
+    MVVM最早由微软提出来，它借鉴了桌面应用程序的MVC思想，在前端页面中，把Model用纯JavaScript对象表示，View负责显示，两者做到了最大限度的分离。
+    把Model和View关联起来的就是ViewModel。ViewModel负责把Model的数据同步到View显示出来，还负责把View的修改同步回Model。
+    MVVM的核心是 viewModle, 负责转换 Model 中的数据对象来让数据变得更容易管理和使用，该层向上与视图层进行双向数据绑定，
+    向下与 Model 层通过接口请求进行数据交互，起呈上启下作用.
+
+3 ViewModle做了些什么
+    通常在拿到api数据之后，我们会在viewmodel层对数据进行二次封装，以生成符合view层的预期数据模型.ViewModle所封装的数据模型有2种行为，数据状态和
+    数据行为，数据状态即在视图上展现的内容，数据行为即一些交互行为，例如点击等交互操作。View 层展现的不是 Model 层的数据，而是 ViewModel 的数据，
+    由 ViewModel 负责与 Model 层交互，这就完全解耦了 View 层和 Model 层，这个解耦是至关重要的，它是前后端分离方案实施的重要一环。
+
+4 案例
+    Vue的ViewModel层
+    var app = new Vue({
+        el: '#app',
+        data: {     // 用于描述视图状态（有基于 Model 层数据定义的，也有纯前端定义）
+            message: 'Hello Vue!',  // 纯前端定义
+            server: {}, // 存放基于 Model 层数据的二次封装数据
+        },
+        methods: {  // 用于描述视图行为（完全前端定义）
+            showMessage(){
+                let vm = this;
+                alert(vm.message);
+            }
+        });
+
+    
+        
+    
+    
