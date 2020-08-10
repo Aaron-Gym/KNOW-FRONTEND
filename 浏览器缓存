@@ -1,0 +1,53 @@
+浏览器缓存策略
+
+在介绍浏览器缓存之前，先抛出几个问题，请各位小伙伴思考一下
+1 何为浏览器缓存？
+  浏览器请求过的静态资源（HTML, JS, CSS）存储在本地（磁盘），当浏览器再次请求这些资源时，直接从本地加载，无需从服务器下载。
+  
+2 浏览器缓存有什么用？
+  加快网页加载速度，减少请求，减少服务器的负担，提升网站性能。缓存乃前端性能优化的主战场，优秀的缓存策略能够很好的提升网站性能。
+  
+OK，言归正传，主要来介绍一下强缓存和协商缓存
+  
+一、强缓存
+  所谓强缓存，即直接从缓存中获取资源，无需经过服务器.
+  
+  1 expires:
+  http1.0时的规范，该值为一个绝对时间的GMT时间字符串，随着response header返回，再次发出http请求时，如果发送的请求时间早于expires，则直接从本地缓存中获取资源，若发送请求时间晚于expires，
+  则说明缓存已过期，会从服务器获取资源。
+  
+  2 cache-control：
+  http1.1时的规范，设置了max-age过期时间，该值为一个相对值，未超过时间，则从本地缓存读取资源。
+  
+  cache-control常用的设置：
+    （1）no-cache: 不使用强缓存。需要使用缓存协商。
+    （2）no-store: 禁止浏览器缓存资源，每次都会从服务器下载资源。
+    （3）public: 资源可以被客户端和服务器（代理服务器）缓存。
+    （4）private: 资源只能被浏览器缓存。
+    （5）max-age: 过期时间，该值为一个相对值，超过时间，则请求会击中服务器
+
+  当expires 和 cache-control 同时出现时，以cache-control优先。
+  
+二、协商缓存
+  请求每一次都需要经过服务器，由服务器进行判断，缓存资源是否可用
+  
+  1 Last-Modified/If-Modified-Since
+      （1）浏览器第一次向服务器请求资源时，response header中会带有Last-Modified，表示该资源在服务器的最后修改时间。
+      （2）浏览器再次向服务器请求该资源时，request header中会带上If-Modified-Since, 该值即为上次请求返回的Last-Modified的值。
+      （3）服务器接收到请求时，根据request header中If-Modified-Since的值与该资源在服务器的最后修改时间做对比，判断资源是否有变化，如果该资源没有变化，则返回304 Not modified的响应，
+          不会返回资源，并且在response header不会再返回Last-Modified字段（因为资源没有变化，所以Last-Modified的值与第一次返回的值相同，无需返回)，浏览器从缓存中加载资源。若
+          资源有变化，则返回200，返回最新的资源。并且response header中会携带更新后的Last-Modified，下一次资源请求时request header中携带的是上一次response header中返回的Last-Modified的值
+
+  2 Etag/If-None-Match（这两个值是由服务器生成的每个资源的唯一标识符，每次资源改变都会重新生成新的值）
+      （1）浏览器第一次向服务器请求资源时，response header中会带有Etag。
+      （2）浏览器再次请求该资源时，request header中会携带If-None-Match，该值为上次请求返回的Etag的值。
+      （3）服务器再次接受到请求时，根据request header中If-None-Match值与该资源在服务器上生成Etag进行对比，判断资源是否有变化，如果该资源没有变化，则返回304，不会返回资源，若资源有变化，
+          返回200，返回新的资源。无论资源有没有变化，每一次响应都会携带Etag
+    
+
+  若Etag 和 Last-Modified 同时使用，先对比Etag，若Etag相同再对比Last-Modified
+  
+强缓存与协商缓存的区别：
+
+          
+      
